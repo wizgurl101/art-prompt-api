@@ -16,6 +16,6 @@ func ArtPromptHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		GetArtPrompt(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "404 Not Found", http.StatusMethodNotAllowed)
 	}
 }
