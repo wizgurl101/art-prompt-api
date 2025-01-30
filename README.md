@@ -1,1 +1,1 @@
-# art-prompt-api
+# Art Prompt API
