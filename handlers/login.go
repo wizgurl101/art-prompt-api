@@ -2,27 +2,19 @@ package handlers
 
 import (
 	auth "art-prompt-api/middlewares"
-	model "art-prompt-api/models"
+	models "art-prompt-api/models"
 	"encoding/json"
 	"net/http"
 )
 
 func LoginUser(w http.ResponseWriter, r *http.Request) {
-
-	var credentials model.Credentials
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	user, isOk := r.Context().Value(models.UserContextKey).(models.User)
+	if !isOk {
+		http.Error(w, "Invalid request payload", http.StatusInternalServerError)
 		return
 	}
 
-	//todo implement login logic to use DB
-	if credentials.Email != "test@test.com" || credentials.Password != "123" {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-
-	token, err := auth.GenerateJWT(credentials.Email)
+	token, err := auth.GenerateJWT(user.Email)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

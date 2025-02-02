@@ -1,6 +1,7 @@
 package db
 
 import (
+	"art-prompt-api/models"
 	"context"
 	"fmt"
 	"os"
@@ -42,4 +43,17 @@ func GetCollection(collectionName string) *mongo.Collection {
 	}
 
 	return client.Database("art-prompt").Collection(collectionName)
+}
+
+func GetUser(email string) (models.User, error) {
+	filter := bson.D{{Key: "email", Value: email}}
+
+	collection := GetCollection("users")
+	var result models.User
+	err := collection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return result, nil
 }
