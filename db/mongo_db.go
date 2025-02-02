@@ -11,11 +11,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func Connect() (string, error) {
+func getClient() (*mongo.Client, error) {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
-		return "", err
+		return nil, err
 	}
 
 	mongo_db_uri := os.Getenv("MONGODB_URI")
@@ -24,17 +24,22 @@ func Connect() (string, error) {
 
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
-		return "", err
-	}
-	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-
-	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Err(); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return "Connected to MongoDB!", nil
+	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func GetCollection(collectionName string) *mongo.Collection {
+	client, err := getClient()
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	return client.Database("art-prompt").Collection(collectionName)
 }

@@ -10,6 +10,6 @@ func RegisterRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", handlers.LoginHandler)
 	mux.Handle("/prompt", middlewares.AuthMiddleware(http.HandlerFunc(handlers.ArtPromptHandler)))
-	mux.HandleFunc("/user", handlers.UserHandler)
+	mux.Handle("/create-user", middlewares.HashPasswordMiddleware(http.HandlerFunc(handlers.UserHandler)))
 	return mux
 }
