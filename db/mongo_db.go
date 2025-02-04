@@ -6,19 +6,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func getClient() (*mongo.Client, error) {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-		return nil, err
-	}
-
 	mongo_db_uri := os.Getenv("MONGODB_URI")
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(mongo_db_uri).SetServerAPIOptions(serverAPI)
