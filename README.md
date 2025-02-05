@@ -13,3 +13,9 @@
 ```bash
     docker run -p 5000:5000 art-prompt-api
 ```
+
+### Run Docker Compose
+
+```bash
+    docker-compose up --build
+```

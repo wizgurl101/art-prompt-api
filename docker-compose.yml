@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-local:/root/.ollama
+      - ./ollama_pull_model.sh:/ollama_pull_model.sh
+    command:
+      - "ollama --version"
+    entrypoint: ["/bin/bash", "/ollama_pull_model.sh"]
+    networks:
+      - llm_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  backend:
+    build: ./
+    container_name: art-prompt-api
+    restart: always
+    depends_on:
+      - ollama
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    networks:
+      - llm_network
+
+networks:
+  llm_network:
+    driver: bridge
+
+volumes:
+  ollama-local:
+    external: true

@@ -4,6 +4,7 @@ import (
 	models "art-prompt-api/models"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -20,7 +21,7 @@ func generatePrompt() string {
 	min := 2
 	max := 4
 	number := rand.Intn(max-min+1) + min
-	prompt := "Generate a " + strconv.Itoa(number) + "words art prompt to draw. " + "Related to " + nouns[picked_noun] + ". " + "Return only one prompt."
+	prompt := "Generate a " + strconv.Itoa(number) + "words art prompt to draw. " + "Related to " + nouns[picked_noun] + ". " + "Return only one prompt and do not include the word draw in the prompt."
 
 	return prompt
 }
@@ -73,6 +74,7 @@ func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 
 	ollama_response, err := sendOllamaRequest(ollama_POST_url, request)
 	if err != nil {
+		fmt.Printf("Failed to get art prompt: %v\n", err)
 		http.Error(w, "Failed to get art prompt", http.StatusInternalServerError)
 		return
 	}
