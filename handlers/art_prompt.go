@@ -13,7 +13,7 @@ import (
 )
 
 func generatePrompt() string {
-	var nouns [6]string = [6]string{"video games", "sci fi", "animals", "nature", "anatomy", "plants"}
+	var nouns [8]string = [8]string{"video games", "sci fi", "animals", "nature", "anatomy", "plants", "space", "fantasy"}
 	nouns_min := 0
 	nouns_max := len(nouns) - 1
 	picked_noun := rand.Intn(nouns_max-nouns_min+1) + nouns_min
