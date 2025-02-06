@@ -3,15 +3,11 @@ version: "3.8"
 services:
   ollama:
     image: ollama/ollama:latest
-    pull_policy: always
-    restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
       - ollama-local:/root/.ollama
       - ./ollama_pull_model.sh:/ollama_pull_model.sh
-    command:
-      - "ollama --version"
     entrypoint: ["/bin/bash", "/ollama_pull_model.sh"]
     networks:
       - llm_network
@@ -21,7 +17,6 @@ services:
   backend:
     build: ./
     container_name: art-prompt-api
-    restart: always
     depends_on:
       - ollama
     ports:

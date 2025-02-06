@@ -3,7 +3,7 @@
 /bin/ollama serve &
 pid=$!
 
-sleep 5
+sleep 
 
 echo "🔴 Retrieve LLAMA3.2 1b model..."
 ollama pull llama3.2:1b
