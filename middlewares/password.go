@@ -64,7 +64,7 @@ func VerifyPasswordMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), models.UserContextKey, user)
+		ctx := context.WithValue(r.Context(), models.UserContextKey, found_user)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
