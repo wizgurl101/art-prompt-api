@@ -2,14 +2,18 @@
 
 ## Dev Setup
 
-### Build Docker Image
+### Run Docker Compose Build
 
 ```bash
-    docker build -t art-prompt-api .
+    docker-compose up --build
 ```
 
-### Run Docker container
+### If the containers been build, use the following commands to run the API
 
 ```bash
-    docker run -p 5000:5000 art-prompt-api
+    docker-compose up backend
+```
+
+```bash
+    docker-compose up ollama
 ```
