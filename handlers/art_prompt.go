@@ -21,7 +21,7 @@ func generatePrompt() string {
 	min := 2
 	max := 4
 	number := rand.Intn(max-min+1) + min
-	prompt := "Generate a " + strconv.Itoa(number) + "words art prompt to draw. " + "Related to " + nouns[picked_noun] + ". " + "Return only one prompt and do not include the word draw in the prompt."
+	prompt := "Generate a " + strconv.Itoa(number) + "words art prompt to draw. " + "Related to " + nouns[picked_noun] + ". " + "Return only one prompt and do not include the word draw in the prompt. Do not use the word generate or create in the prompt."
 
 	return prompt
 }
