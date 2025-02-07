@@ -56,6 +56,20 @@ func sendOllamaRequest(url string, request models.OllamaRequest) (models.OllamaR
 	return response, nil
 }
 
+func formatGeneratedPrompt(prompt string) string {
+	var formatted_prompt string
+	removed_semicolon := strings.ReplaceAll(prompt, "\"", "")
+
+	if strings.Contains(removed_semicolon, "\n\n") {
+		parts := strings.Split(removed_semicolon, "\n\n")
+		formatted_prompt = parts[1]
+	} else {
+		formatted_prompt = removed_semicolon
+	}
+
+	return formatted_prompt
+}
+
 func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 	prompt := generatePrompt()
 	ollama_url := os.Getenv("OLLAMA_URL")
@@ -79,7 +93,7 @@ func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model_message := strings.ReplaceAll(ollama_response.Message.Content, "\"", "")
+	model_message := formatGeneratedPrompt(ollama_response.Message.Content)
 	response := map[string]string{"art_prompt": model_message}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
