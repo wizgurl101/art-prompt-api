@@ -11,5 +11,6 @@ func RegisterRoutes() *http.ServeMux {
 	mux.Handle("/login", middlewares.VerifyPasswordMiddleware(http.HandlerFunc(handlers.LoginHandler)))
 	mux.Handle("/prompt", middlewares.AuthMiddleware(http.HandlerFunc(handlers.ArtPromptHandler)))
 	mux.Handle("/create-user", middlewares.HashPasswordMiddleware(http.HandlerFunc(handlers.UserHandler)))
+	mux.Handle("/redis", http.HandlerFunc(handlers.RedisHandler))
 	return mux
 }

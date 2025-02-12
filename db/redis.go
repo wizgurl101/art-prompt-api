@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -25,8 +26,8 @@ func InitializeRedis() {
 	fmt.Println("Connected to Redis:", pong)
 }
 
-func SetValue(key string, value string) error {
-	err := rdb.Set(ctx, key, value, 0).Err()
+func SetValue(key string, value string, ttl time.Duration) error {
+	err := rdb.Set(ctx, key, value, ttl).Err()
 	if err != nil {
 		return fmt.Errorf("error setting value: %v", err)
 	}
@@ -47,4 +48,12 @@ func DoesKeyExists(key string) (bool, error) {
 		return false, fmt.Errorf("error checking if key exists: %v", err)
 	}
 	return exists == 1, nil
+}
+
+func ClearAllKeys() error {
+	err := rdb.FlushAll(ctx).Err()
+	if err != nil {
+		return fmt.Errorf("error clearing all keys: %v", err)
+	}
+	return nil
 }

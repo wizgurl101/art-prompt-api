@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func generatePrompt() string {
@@ -114,8 +115,8 @@ func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 		model_message := formatGeneratedPrompt(ollama_response.Message.Content)
 		prompt_message = model_message
 
-		//todo set cahche to last until the next
-		err = db.SetValue(user_key, model_message)
+		ttl := 6 * time.Hour
+		err = db.SetValue(user_key, model_message, ttl)
 		if err != nil {
 			fmt.Printf("Failed to cache user prompt: %v\n", err)
 		}
