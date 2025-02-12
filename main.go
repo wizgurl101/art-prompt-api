@@ -1,6 +1,7 @@
 package main
 
 import (
+	"art-prompt-api/db"
 	"art-prompt-api/routes"
 	"fmt"
 	"net/http"
@@ -14,6 +15,8 @@ func main() {
 		fmt.Println("Error loading .env file")
 		return
 	}
+
+	db.InitializeRedis()
 
 	routes := routes.RegisterRoutes()
 	fmt.Println("Art Prompt API Server is running on port 5000")

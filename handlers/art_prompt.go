@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"art-prompt-api/db"
 	models "art-prompt-api/models"
 	"bytes"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func generatePrompt() string {
@@ -71,6 +73,12 @@ func formatGeneratedPrompt(prompt string) string {
 }
 
 func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("userId")
+	if userId == "" {
+		http.Error(w, "Missing userId query parameter", http.StatusBadRequest)
+		return
+	}
+
 	prompt := generatePrompt()
 	ollama_url := os.Getenv("OLLAMA_URL")
 	ollama_POST_url := ollama_url + "/api/chat"
@@ -86,15 +94,41 @@ func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 		Stream: false,
 	}
 
-	ollama_response, err := sendOllamaRequest(ollama_POST_url, request)
+	var prompt_message string
+
+	user_key := userId + "_prompt"
+	does_user_prompt_exists, err := db.DoesKeyExists(user_key)
 	if err != nil {
-		fmt.Printf("Failed to get art prompt: %v\n", err)
-		http.Error(w, "Failed to get art prompt", http.StatusInternalServerError)
-		return
+		fmt.Printf("Failed to check if user prompt exists: %v\n", err)
 	}
 
-	model_message := formatGeneratedPrompt(ollama_response.Message.Content)
-	response := map[string]string{"art_prompt": model_message}
+	if does_user_prompt_exists {
+		user_prompt, err := db.GetValue(user_key)
+		if err != nil {
+			fmt.Printf("Failed to get user cached prompt: %v\n", err)
+		}
+
+		request.Messages[0].Content = user_prompt
+		prompt_message = user_prompt
+	} else {
+		ollama_response, err := sendOllamaRequest(ollama_POST_url, request)
+		if err != nil {
+			fmt.Printf("Failed to get art prompt: %v\n", err)
+			http.Error(w, "Failed to get art prompt", http.StatusInternalServerError)
+			return
+		}
+
+		model_message := formatGeneratedPrompt(ollama_response.Message.Content)
+		prompt_message = model_message
+
+		ttl := 6 * time.Hour
+		err = db.SetValue(user_key, model_message, ttl)
+		if err != nil {
+			fmt.Printf("Failed to cache user prompt: %v\n", err)
+		}
+	}
+
+	response := map[string]string{"art_prompt": prompt_message}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
