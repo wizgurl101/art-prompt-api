@@ -73,6 +73,12 @@ func formatGeneratedPrompt(prompt string) string {
 }
 
 func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("userId")
+	if userId == "" {
+		http.Error(w, "Missing userId query parameter", http.StatusBadRequest)
+		return
+	}
+
 	prompt := generatePrompt()
 	ollama_url := os.Getenv("OLLAMA_URL")
 	ollama_POST_url := ollama_url + "/api/chat"
@@ -89,8 +95,8 @@ func GetArtPrompt(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var prompt_message string
-	//todo get userID from request
-	user_key := "123" + "_prompt"
+
+	user_key := userId + "_prompt"
 	does_user_prompt_exists, err := db.DoesKeyExists(user_key)
 	if err != nil {
 		fmt.Printf("Failed to check if user prompt exists: %v\n", err)

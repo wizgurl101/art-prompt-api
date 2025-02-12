@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func clearAllKeys(w http.ResponseWriter, r *http.Request) {
+func clearAllKeys(w http.ResponseWriter) {
 	err := db.ClearAllKeys()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -17,7 +17,7 @@ func clearAllKeys(w http.ResponseWriter, r *http.Request) {
 func RedisHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodDelete:
-		clearAllKeys(w, r)
+		clearAllKeys(w)
 	default:
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
