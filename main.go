@@ -19,8 +19,8 @@ func main() {
 	db.InitializeRedis()
 
 	routes := routes.RegisterRoutes()
-	fmt.Println("Art Prompt API Server is running on port 5000")
-	if err := http.ListenAndServe(":5000", routes); err != nil {
+	fmt.Println("Art Prompt API Server is running")
+	if err := http.ListenAndServe(":8080", routes); err != nil {
 		fmt.Println("Failed to start server:", err)
 	}
 }
